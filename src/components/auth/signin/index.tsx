@@ -1,17 +1,25 @@
 // src/components/auth/SignIn.tsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hooks/user";
 
 function SignIn() {
   const navigate = useNavigate();
-  const [email, setEmail]       = useState("");
+
+  const { login } = useAuth();
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError]       = useState("");
-  const [loading, setLoading]   = useState(false);
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [showPass, setShowPass] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setError("");
 
     if (!email || !password) {
@@ -19,13 +27,25 @@ function SignIn() {
       return;
     }
 
-    setLoading(true);
-    // Simulate async auth
-    await new Promise((r) => setTimeout(r, 800));
-    setLoading(false);
+    try {
+      setLoading(true);
 
-    // Replace with real auth logic
-    navigate("/dashboard");
+      await login({
+        username: email,
+        password,
+      });
+
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error(err);
+
+      setError(
+        err?.response?.data?.message ||
+          "Invalid email or password."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,34 +62,57 @@ function SignIn() {
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 text-white text-xl font-black mb-3">
                 S
               </div>
+
               <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                Welcome to <span className="text-blue-600">SkillSphere</span>
+                Welcome to{" "}
+                <span className="text-blue-600">
+                  SkillSphere
+                </span>
               </h1>
-              <p className="text-sm text-gray-400 mt-1">Sign in to your learning account</p>
+
+              <p className="text-sm text-gray-400 mt-1">
+                Sign in to your learning account
+              </p>
             </div>
 
             {/* Error */}
             {error && (
               <div className="mb-4 flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg">
-                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <svg
+                  className="w-4 h-4 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                  />
                 </svg>
+
                 {error}
               </div>
             )}
 
             {/* Form */}
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form
+              onSubmit={handleLogin}
+              className="space-y-4"
+            >
               <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-                  Email
+                  Email or ldap
                 </label>
+
                 <input
                   type="email"
                   placeholder="you@company.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
                   className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   autoComplete="email"
                 />
@@ -80,34 +123,68 @@ function SignIn() {
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Password
                   </label>
-                  <button type="button" className="text-xs text-blue-600 hover:text-blue-800 font-medium transition">
+
+                  <button
+                    type="button"
+                    className="text-xs text-blue-600 hover:text-blue-800 font-medium transition"
+                  >
                     Forgot password?
                   </button>
                 </div>
+
                 <div className="relative">
                   <input
-                    type={showPass ? "text" : "password"}
+                    type={
+                      showPass ? "text" : "password"
+                    }
                     placeholder="••••••••"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) =>
+                      setPassword(e.target.value)
+                    }
                     className="w-full border border-gray-200 rounded-lg px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                     autoComplete="current-password"
                   />
+
                   <button
                     type="button"
-                    onClick={() => setShowPass((v) => !v)}
+                    onClick={() =>
+                      setShowPass((v) => !v)
+                    }
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
-                    aria-label={showPass ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPass
+                        ? "Hide password"
+                        : "Show password"
+                    }
                   >
                     {showPass ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242"
+                        />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-3-9C7.268 3 3.268 5.943 2 10c1.268 4.057 5.268 7 10 7s8.732-2.943 10-7c-1.268-4.057-5.268-7-10-7z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-3-9C7.268 3 3.268 5.943 2 10c1.268 4.057 5.268 7 10 7s8.732-2.943 10-7c-1.268-4.057-5.268-7-10-7z"
+                        />
                       </svg>
                     )}
                   </button>
@@ -121,10 +198,27 @@ function SignIn() {
               >
                 {loading ? (
                   <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    <svg
+                      className="w-4 h-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8z"
+                      />
                     </svg>
+
                     Signing in…
                   </>
                 ) : (
@@ -141,10 +235,6 @@ function SignIn() {
             </p>
           </div>
         </div>
-
-        <p className="text-center text-xs text-gray-400 mt-4">
-          © 2025 SkillSphere · All rights reserved
-        </p>
       </div>
     </div>
   );
