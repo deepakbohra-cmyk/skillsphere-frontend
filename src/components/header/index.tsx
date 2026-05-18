@@ -1,9 +1,6 @@
 // src/components/header/Header.tsx
 
-import {
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../hooks/user";
 
@@ -35,8 +32,17 @@ function Header({ onMenuClick }: HeaderProps) {
 
   const { logout } = useAuth();
 
-  const title =
-    PAGE_TITLES[location.pathname] ?? "Dashboard";
+  let title = PAGE_TITLES[location.pathname];
+
+  if (location.pathname.includes("/dashboard/course/")) {
+    title = "Course Player";
+  }
+
+  if (location.pathname.includes("/dashboard/learn/")) {
+    title = "Learning Path";
+  }
+
+  title = title ?? "Dashboard";
 
   const handleLogout = () => {
     logout();
@@ -122,9 +128,7 @@ function Header({ onMenuClick }: HeaderProps) {
             />
           </svg>
 
-          <span className="hidden sm:inline">
-            Logout
-          </span>
+          <span className="hidden sm:inline">Logout</span>
         </button>
       </div>
     </header>
