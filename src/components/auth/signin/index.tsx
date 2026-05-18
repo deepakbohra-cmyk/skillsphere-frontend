@@ -39,10 +39,7 @@ function SignIn() {
     } catch (err: any) {
       console.error(err);
 
-      setError(
-        err?.response?.data?.message ||
-          "Invalid email or password."
-      );
+      setError(err?.response?.data?.message || "Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -64,10 +61,7 @@ function SignIn() {
               </div>
 
               <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                Welcome to{" "}
-                <span className="text-blue-600">
-                  SkillSphere
-                </span>
+                Welcome to <span className="text-blue-600">SkillSphere</span>
               </h1>
 
               <p className="text-sm text-gray-400 mt-1">
@@ -97,10 +91,7 @@ function SignIn() {
             )}
 
             {/* Form */}
-            <form
-              onSubmit={handleLogin}
-              className="space-y-4"
-            >
+            <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
                   Email or ldap
@@ -110,9 +101,7 @@ function SignIn() {
                   type="email"
                   placeholder="you@company.com"
                   value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   autoComplete="email"
                 />
@@ -134,29 +123,19 @@ function SignIn() {
 
                 <div className="relative">
                   <input
-                    type={
-                      showPass ? "text" : "password"
-                    }
+                    type={showPass ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
-                    onChange={(e) =>
-                      setPassword(e.target.value)
-                    }
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full border border-gray-200 rounded-lg px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                     autoComplete="current-password"
                   />
 
                   <button
                     type="button"
-                    onClick={() =>
-                      setShowPass((v) => !v)
-                    }
+                    onClick={() => setShowPass((v) => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
-                    aria-label={
-                      showPass
-                        ? "Hide password"
-                        : "Show password"
-                    }
+                    aria-label={showPass ? "Hide password" : "Show password"}
                   >
                     {showPass ? (
                       <svg
@@ -218,7 +197,6 @@ function SignIn() {
                         d="M4 12a8 8 0 018-8v8z"
                       />
                     </svg>
-
                     Signing in…
                   </>
                 ) : (

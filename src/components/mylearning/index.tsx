@@ -1,6 +1,6 @@
+// src/components/mylearning/index.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   Database,
   GitMerge,
@@ -11,261 +11,306 @@ import {
   Medal,
   Award,
   Lock,
+  ChevronRight,
 } from "lucide-react";
+import { COURSES } from "../../data/courses";
 
 type TabType = "progress" | "completed" | "wishlist";
 
-type LearningCardProps = {
-  title: string;
-  subtitle: string;
-  progress: number;
-  progressColor: string;
-  icon: React.ReactNode;
-  iconBg: string;
-  footerLeft: string;
-  footerRight: string;
-  footerRightClass?: string;
-  buttonText: string;
-  buttonIcon: React.ReactNode;
-  buttonClass?: string;
+// Map learning paths to course ids for navigation
+const LP_PATH_MAP: Record<string, string> = {
+  "schema-design-mastery": "lp1",
+  "etl-pipeline": "lp2",
+  "leadership-for-developers": "lp3",
 };
 
-function LearningCard({
-  title,
-  subtitle,
-  progress,
-  progressColor,
-  icon,
-  iconBg,
-  footerLeft,
-  footerRight,
-  footerRightClass = "text-gray-500",
-  buttonText,
-  buttonIcon,
-  buttonClass = "bg-blue-600 hover:bg-blue-700",
-}: LearningCardProps) {
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-      {/* Header */}
-      <div className="mb-4 flex items-center gap-3">
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-xl ${iconBg}`}
-        >
-          {icon}
-        </div>
-
-        <div>
-          <h3 className="text-sm font-semibold text-gray-800">
-            {title}
-          </h3>
-
-          <p className="text-xs text-gray-500">
-            {subtitle}
-          </p>
-        </div>
-      </div>
-
-      {/* Progress */}
-      <div className="h-2 w-full rounded-full bg-gray-100">
-        <div
-          className={`h-2 rounded-full ${progressColor}`}
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      {/* Footer */}
-      <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
-        <span>{footerLeft}</span>
-
-        <span className={footerRightClass}>
-          {footerRight}
-        </span>
-      </div>
-
-      {/* Button */}
-      <button
-        className={`mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition ${buttonClass}`}
-      >
-        {buttonIcon}
-        {buttonText}
-      </button>
-    </div>
-  );
-}
-
-type BadgeCardProps = {
-  title: string;
-  level: string;
-  icon: React.ReactNode;
-  iconBg: string;
-  tagClass: string;
-  locked?: boolean;
+const ICON_MAP: Record<string, React.ReactNode> = {
+  Database: <Database className="h-5 w-5" />,
+  GitMerge: <GitMerge className="h-5 w-5" />,
+  Users: <Users className="h-5 w-5" />,
 };
-
-function BadgeCard({
-  title,
-  level,
-  icon,
-  iconBg,
-  tagClass,
-  locked = false,
-}: BadgeCardProps) {
-  return (
-    <div
-      className={`rounded-2xl p-4 text-center shadow-sm ${
-        locked
-          ? "border border-dashed border-gray-300 bg-transparent"
-          : "border border-gray-200 bg-white"
-      }`}
-    >
-      <div
-        className={`mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl ${iconBg}`}
-      >
-        {icon}
-      </div>
-
-      <h3
-        className={`text-sm font-semibold ${
-          locked ? "text-gray-400" : "text-gray-800"
-        }`}
-      >
-        {title}
-      </h3>
-
-      <span
-        className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${tagClass}`}
-      >
-        {level}
-      </span>
-    </div>
-  );
-}
 
 function MyLearningPage() {
   const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState<TabType>("progress");
 
-  const tabs = [
-    { id: "progress", label: "In Progress" },
-    { id: "completed", label: "Completed" },
+  const enrolled = COURSES.filter((c) => c.enrolled);
+  const completed = COURSES.filter(
+    (c) => c.enrolled && (c.progress ?? 0) >= 100,
+  );
+  const inProgress = COURSES.filter(
+    (c) => c.enrolled && (c.progress ?? 0) < 100,
+  );
+
+  const tabs: { id: TabType; label: string; count?: number }[] = [
+    { id: "progress", label: "In Progress", count: inProgress.length },
+    { id: "completed", label: "Completed", count: completed.length },
     { id: "wishlist", label: "Saved / Wishlist" },
   ];
 
+  const handleResume = (courseId: string) => {
+    const pathId = LP_PATH_MAP[courseId] ?? courseId;
+    navigate(`/dashboard/learn/${pathId}`);
+  };
+
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="space-y-6 p-1 sm:p-2">
       {/* Tabs */}
       <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as TabType)}
-            className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+            onClick={() => setActiveTab(tab.id)}
+            className={`rounded-xl px-4 py-2 text-sm font-medium transition flex items-center gap-2 ${
               activeTab === tab.id
                 ? "bg-blue-600 text-white shadow-sm"
                 : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
             }`}
           >
             {tab.label}
+            {tab.count !== undefined && (
+              <span
+                className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+                  activeTab === tab.id
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-100 text-gray-500"
+                }`}
+              >
+                {tab.count}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Learning Cards */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <LearningCard
-          title="Schema Design Mastery"
-          subtitle="Module 4 of 6 · Advanced"
-          progress={68}
-          progressColor="bg-blue-600"
-          icon={<Database className="h-5 w-5 text-blue-600" />}
-          iconBg="bg-blue-50"
-          footerLeft="68%"
-          footerRight="Due Jun 2"
-          buttonText="Resume Learning"
-          buttonIcon={<Play className="h-4 w-4" />}
-        />
+      {/* In Progress */}
+      {activeTab === "progress" && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {inProgress.map((course) => {
+            const progress = course.progress ?? 0;
+            const isOverdue = course.id === "etl-pipeline";
+            return (
+              <div
+                key={course.id}
+                className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition group"
+              >
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${course.iconBg} ${course.iconColor}`}
+                  >
+                    {ICON_MAP[course.icon]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold text-gray-900 truncate">
+                      {course.title}
+                    </h3>
+                    <p
+                      className={`text-xs mt-0.5 ${isOverdue ? "text-red-500 font-semibold" : "text-gray-500"}`}
+                    >
+                      {course.modules} modules · {course.level}{" "}
+                      {isOverdue ? "· ⚠ Overdue!" : ""}
+                    </p>
+                  </div>
+                  <span
+                    className={`text-xs font-bold px-2 py-1 rounded-full ${
+                      progress >= 80
+                        ? "bg-green-50 text-green-600"
+                        : progress >= 50
+                          ? "bg-blue-50 text-blue-600"
+                          : isOverdue
+                            ? "bg-red-50 text-red-500"
+                            : "bg-amber-50 text-amber-600"
+                    }`}
+                  >
+                    {progress}%
+                  </span>
+                </div>
 
-        <LearningCard
-          title="Ingestion & ETL Pipeline"
-          subtitle="Module 2 of 7 · Overdue"
-          progress={32}
-          progressColor="bg-amber-500"
-          icon={<GitMerge className="h-5 w-5 text-amber-500" />}
-          iconBg="bg-amber-50"
-          footerLeft="32%"
-          footerRight="Overdue!"
-          footerRightClass="text-red-500"
-          buttonText="Resume Learning"
-          buttonIcon={<Play className="h-4 w-4" />}
-        />
+                {/* Progress */}
+                <div className="h-2 w-full rounded-full bg-gray-100 mb-1">
+                  <div
+                    className={`h-2 rounded-full transition-all ${
+                      isOverdue
+                        ? "bg-amber-500"
+                        : progress >= 80
+                          ? "bg-green-500"
+                          : "bg-blue-600"
+                    }`}
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-gray-400 mb-4">
+                  <span>{progress}% complete</span>
+                  <span>
+                    {Math.round(
+                      (1 - progress / 100) * parseInt(course.duration),
+                    )}
+                    h remaining
+                  </span>
+                </div>
 
-        <LearningCard
-          title="Leadership Fundamentals"
-          subtitle="Module 6 of 6 · Final step"
-          progress={91}
-          progressColor="bg-emerald-500"
-          icon={<Users className="h-5 w-5 text-emerald-500" />}
-          iconBg="bg-emerald-50"
-          footerLeft="91%"
-          footerRight="Final assignment pending"
-          buttonText="Submit Assignment"
-          buttonIcon={<Pencil className="h-4 w-4" />}
-          buttonClass="bg-emerald-500 hover:bg-emerald-600"
-        />
+                {/* CTA */}
+                <button
+                  onClick={() => handleResume(course.id)}
+                  className={`w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition ${
+                    progress >= 90
+                      ? "bg-emerald-500 hover:bg-emerald-600"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {progress >= 90 ? (
+                    <Pencil className="h-4 w-4" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
+                  {progress >= 90
+                    ? "Submit Final Assignment"
+                    : "Resume Learning"}
+                  <ChevronRight className="h-4 w-4 ml-auto" />
+                </button>
+              </div>
+            );
+          })}
 
-        {/* Add Course */}
-        <button
-          onClick={() => navigate("/dashboard/catalog")}
-          className="flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 bg-transparent text-gray-400 transition hover:border-blue-400 hover:text-blue-500"
-        >
-          <Plus className="h-8 w-8" />
+          {/* Add Course Card */}
+          <button
+            onClick={() => navigate("/dashboard/catalog")}
+            className="flex min-h-[200px] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 bg-transparent text-gray-400 transition hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50/30"
+          >
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-blue-100 transition">
+              <Plus className="h-6 w-6" />
+            </div>
+            <span className="text-sm font-semibold">Browse Catalog</span>
+            <span className="text-xs text-gray-400">
+              Add a new course to your path
+            </span>
+          </button>
+        </div>
+      )}
 
-          <span className="text-sm font-medium">
-            Add new course
-          </span>
-        </button>
-      </div>
+      {/* Completed */}
+      {activeTab === "completed" && (
+        <div>
+          {completed.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+              <Award className="h-10 w-10 opacity-30 mb-3" />
+              <p className="text-sm font-medium">No completed courses yet.</p>
+              <p className="text-xs mt-1">
+                Keep going — you're making great progress!
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {completed.map((course) => (
+                <div
+                  key={course.id}
+                  className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex h-11 w-11 items-center justify-center rounded-xl ${course.iconBg} ${course.iconColor}`}
+                    >
+                      {ICON_MAP[course.icon]}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-gray-900">
+                        {course.title}
+                      </h3>
+                      <p className="text-xs text-green-600 font-semibold mt-0.5">
+                        ✓ Completed
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Certificates */}
+      {/* Wishlist */}
+      {activeTab === "wishlist" && (
+        <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+          <Lock className="h-10 w-10 opacity-30 mb-3" />
+          <p className="text-sm font-medium">Your wishlist is empty.</p>
+          <p className="text-xs mt-1">
+            Browse the catalog and save courses for later.
+          </p>
+          <button
+            onClick={() => navigate("/dashboard/catalog")}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition"
+          >
+            Browse Catalog
+          </button>
+        </div>
+      )}
+
+      {/* Certificates & Badges */}
       <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-5 text-xl font-bold text-gray-900">
+        <h2 className="text-lg font-bold text-gray-900 mb-5">
           Certificates & Badges
         </h2>
-
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <BadgeCard
-            title="ETL Beginner"
-            level="Bronze"
-            icon={<Medal className="h-7 w-7 text-[#CD7F32]" />}
-            iconBg="bg-amber-50"
-            tagClass="bg-amber-50 text-amber-700"
-          />
-
-          <BadgeCard
-            title="Schema Intermediate"
-            level="Silver"
-            icon={<Medal className="h-7 w-7 text-gray-400" />}
-            iconBg="bg-gray-100"
-            tagClass="bg-gray-100 text-gray-500"
-          />
-
-          <BadgeCard
-            title="Leadership Pro"
-            level="Gold"
-            icon={<Award className="h-7 w-7 text-amber-500" />}
-            iconBg="bg-amber-50"
-            tagClass="bg-amber-50 text-amber-700"
-          />
-
-          <BadgeCard
-            title="Locked"
-            level="Pending"
-            icon={<Lock className="h-7 w-7 text-gray-400" />}
-            iconBg="bg-gray-100"
-            tagClass="bg-gray-100 text-gray-500"
-            locked
-          />
+          {[
+            {
+              title: "ETL Beginner",
+              level: "Bronze",
+              icon: <Medal className="h-7 w-7 text-[#CD7F32]" />,
+              iconBg: "bg-amber-50",
+              tagClass: "bg-amber-50 text-amber-700",
+              locked: false,
+            },
+            {
+              title: "Schema Intermediate",
+              level: "Silver",
+              icon: <Medal className="h-7 w-7 text-gray-400" />,
+              iconBg: "bg-gray-100",
+              tagClass: "bg-gray-100 text-gray-500",
+              locked: false,
+            },
+            {
+              title: "Leadership Pro",
+              level: "Gold",
+              icon: <Award className="h-7 w-7 text-amber-500" />,
+              iconBg: "bg-amber-50",
+              tagClass: "bg-amber-50 text-amber-700",
+              locked: false,
+            },
+            {
+              title: "Schema Master",
+              level: "Pending",
+              icon: <Lock className="h-7 w-7 text-gray-400" />,
+              iconBg: "bg-gray-100",
+              tagClass: "bg-gray-100 text-gray-500",
+              locked: true,
+            },
+          ].map((badge) => (
+            <div
+              key={badge.title}
+              className={`rounded-2xl p-4 text-center transition ${
+                badge.locked
+                  ? "border-2 border-dashed border-gray-200 bg-transparent opacity-60"
+                  : "border border-gray-200 bg-white shadow-sm hover:shadow-md"
+              }`}
+            >
+              <div
+                className={`mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl ${badge.iconBg}`}
+              >
+                {badge.icon}
+              </div>
+              <h3
+                className={`text-sm font-semibold ${badge.locked ? "text-gray-400" : "text-gray-800"}`}
+              >
+                {badge.title}
+              </h3>
+              <span
+                className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badge.tagClass}`}
+              >
+                {badge.level}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
     </div>

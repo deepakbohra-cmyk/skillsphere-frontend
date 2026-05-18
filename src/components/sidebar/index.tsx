@@ -114,9 +114,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 className={navLinkClass}
               >
-                <span className="text-base w-5 text-center">
-                  {item.icon}
-                </span>
+                <span className="text-base w-5 text-center">{item.icon}</span>
 
                 <span className="flex-1">{item.name}</span>
 
@@ -142,9 +140,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 className={navLinkClass}
               >
-                <span className="text-base w-5 text-center">
-                  {item.icon}
-                </span>
+                <span className="text-base w-5 text-center">{item.icon}</span>
 
                 <span className="flex-1">{item.name}</span>
               </NavLink>
@@ -164,9 +160,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 className={navLinkClass}
               >
-                <span className="text-base w-5 text-center">
-                  {item.icon}
-                </span>
+                <span className="text-base w-5 text-center">{item.icon}</span>
 
                 <span className="flex-1">{item.name}</span>
               </NavLink>
@@ -186,9 +180,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                 Arjun Kumar
               </p>
 
-              <p className="text-xs text-gray-400 truncate">
-                Developer · L3
-              </p>
+              <p className="text-xs text-gray-400 truncate">Developer · L3</p>
             </div>
 
             <svg
