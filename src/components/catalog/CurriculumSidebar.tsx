@@ -88,7 +88,7 @@ function CurriculumSidebar({
                   </p>
                   <p className="text-[11px] text-gray-400 mt-0.5">
                     {sectionCompleted}/{section.lessons.length} ·{" "}
-                    {section.lessons.reduce((a, l) => a, 0)} lessons
+                    {section.lessons.length} lessons
                   </p>
                 </div>
                 {isCollapsed ? (

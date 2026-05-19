@@ -1,5 +1,4 @@
 import { Star, Users } from 'lucide-react';
-import React from 'react'
 import type { Course } from '../../data/courses';
 
 function InstructorTab({ course }: { course: Course }) {

@@ -1,8 +1,5 @@
-import React from 'react'
 import type { Course } from '../../data/courses';
 import { CheckCircle2 } from 'lucide-react';
-
-type TabId = "overview" | "curriculum" | "instructor" | "reviews";
 
 function OverviewTab({ course }: { course: Course }) {
   return (

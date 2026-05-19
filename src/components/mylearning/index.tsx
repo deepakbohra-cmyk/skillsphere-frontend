@@ -34,7 +34,6 @@ function MyLearningPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("progress");
 
-  const enrolled = COURSES.filter((c) => c.enrolled);
   const completed = COURSES.filter(
     (c) => c.enrolled && (c.progress ?? 0) >= 100,
   );

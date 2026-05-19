@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -11,22 +11,16 @@ import {
   SkipBack,
   ChevronRight,
   Menu,
-  X,
 } from "lucide-react";
 import ReviewsTab from "./ReviewsTab";
 import {
   getCourse,
   getTotalLessons,
-  getCompletedLessons,
 } from "../../data/courses";
 import VideoPlayer from "./VideoPlayer";
 import CurriculumSidebar from "./CurriculumSidebar";
 import OverviewTab from "./OverviewTab";
 import InstructorTab from "./InstructorTab";
-
-function fmtDuration(d: string) {
-  return d;
-}
 
 const LESSON_ICON: Record<string, React.ReactNode> = {
   video: <Play className="h-3.5 w-3.5" />,

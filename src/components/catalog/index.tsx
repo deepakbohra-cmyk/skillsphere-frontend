@@ -3,35 +3,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
-  Database,
-  GitMerge,
-  ShieldCheck,
-  ChartColumn,
-  Users,
-  ClipboardCheck,
-  ArrowUpDown,
-  MessageCircle,
-  Briefcase,
-  Star,
-  Clock,
-  BookOpen,
   Play,
-  Lock,
 } from "lucide-react";
 import CourseCard from "./CourseCard";
 import { COURSES, type Course } from "../../data/courses";
-
-const ICON_MAP: Record<string, React.ReactNode> = {
-  Database: <Database className="h-6 w-6" />,
-  GitMerge: <GitMerge className="h-6 w-6" />,
-  ShieldCheck: <ShieldCheck className="h-6 w-6" />,
-  ChartColumn: <ChartColumn className="h-6 w-6" />,
-  Users: <Users className="h-6 w-6" />,
-  ClipboardCheck: <ClipboardCheck className="h-6 w-6" />,
-  ArrowUpDown: <ArrowUpDown className="h-6 w-6" />,
-  MessageCircle: <MessageCircle className="h-6 w-6" />,
-  Briefcase: <Briefcase className="h-6 w-6" />,
-};
 
 const CATEGORIES = [
   "All",
@@ -43,22 +18,6 @@ const CATEGORIES = [
   "Mandatory",
   "New Arrivals",
 ];
-
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <Star
-          key={s}
-          className={`h-3.5 w-3.5 ${s <= Math.round(rating) ? "fill-amber-400 text-amber-400" : "text-gray-200"}`}
-        />
-      ))}
-      <span className="ml-1 text-xs font-semibold text-amber-600">
-        {rating.toFixed(1)}
-      </span>
-    </div>
-  );
-}
 
 function CatalogPage() {
   const navigate = useNavigate();
