@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Headphones,
   Mail,
-  MessageSquare,
   Hash,
   MessagesSquare,
 } from "lucide-react";

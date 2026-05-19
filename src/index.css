@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 /* IBM Plex Sans - Default Font for Entire Website */
 html {

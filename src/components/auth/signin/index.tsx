@@ -31,7 +31,7 @@ function SignIn() {
       setLoading(true);
 
       await login({
-        username: email,
+        email,
         password,
       });
 

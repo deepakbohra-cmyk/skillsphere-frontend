@@ -1,5 +1,4 @@
 import {
-  AlertTriangle,
   Lock,
   AlertCircle,
 } from "lucide-react";
