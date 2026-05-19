@@ -29,7 +29,7 @@ import AdminPanel from "../components/admin";
 /* ───────────────────────────────────────────── */
 
 const ProtectedRoute = () => {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (

@@ -2,18 +2,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Database,
-  GitMerge,
-  Users,
-  Play,
-  Pencil,
   Plus,
   Medal,
   Award,
   Lock,
-  ChevronRight,
 } from "lucide-react";
 import { COURSES } from "../../data/courses";
+import CourseCard from "../catalog/CourseCard";
 
 type TabType = "progress" | "completed" | "wishlist";
 
@@ -22,12 +17,6 @@ const LP_PATH_MAP: Record<string, string> = {
   "schema-design-mastery": "lp1",
   "etl-pipeline": "lp2",
   "leadership-for-developers": "lp3",
-};
-
-const ICON_MAP: Record<string, React.ReactNode> = {
-  Database: <Database className="h-5 w-5" />,
-  GitMerge: <GitMerge className="h-5 w-5" />,
-  Users: <Users className="h-5 w-5" />,
 };
 
 function MyLearningPage() {
@@ -84,103 +73,24 @@ function MyLearningPage() {
 
       {/* In Progress */}
       {activeTab === "progress" && (
-        <div className="grid gap-4 md:grid-cols-2">
-          {inProgress.map((course) => {
-            const progress = course.progress ?? 0;
-            const isOverdue = course.id === "etl-pipeline";
-            return (
-              <div
-                key={course.id}
-                className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition group"
-              >
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${course.iconBg} ${course.iconColor}`}
-                  >
-                    {ICON_MAP[course.icon]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-gray-900 truncate">
-                      {course.title}
-                    </h3>
-                    <p
-                      className={`text-xs mt-0.5 ${isOverdue ? "text-red-500 font-semibold" : "text-gray-500"}`}
-                    >
-                      {course.modules} modules · {course.level}{" "}
-                      {isOverdue ? "· ⚠ Overdue!" : ""}
-                    </p>
-                  </div>
-                  <span
-                    className={`text-xs font-bold px-2 py-1 rounded-full ${
-                      progress >= 80
-                        ? "bg-green-50 text-green-600"
-                        : progress >= 50
-                          ? "bg-blue-50 text-blue-600"
-                          : isOverdue
-                            ? "bg-red-50 text-red-500"
-                            : "bg-amber-50 text-amber-600"
-                    }`}
-                  >
-                    {progress}%
-                  </span>
-                </div>
-
-                {/* Progress */}
-                <div className="h-2 w-full rounded-full bg-gray-100 mb-1">
-                  <div
-                    className={`h-2 rounded-full transition-all ${
-                      isOverdue
-                        ? "bg-amber-500"
-                        : progress >= 80
-                          ? "bg-green-500"
-                          : "bg-blue-600"
-                    }`}
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-xs text-gray-400 mb-4">
-                  <span>{progress}% complete</span>
-                  <span>
-                    {Math.round(
-                      (1 - progress / 100) * parseInt(course.duration),
-                    )}
-                    h remaining
-                  </span>
-                </div>
-
-                {/* CTA */}
-                <button
-                  onClick={() => handleResume(course.id)}
-                  className={`w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition ${
-                    progress >= 90
-                      ? "bg-emerald-500 hover:bg-emerald-600"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                >
-                  {progress >= 90 ? (
-                    <Pencil className="h-4 w-4" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
-                  {progress >= 90
-                    ? "Submit Final Assignment"
-                    : "Resume Learning"}
-                  <ChevronRight className="h-4 w-4 ml-auto" />
-                </button>
-              </div>
-            );
-          })}
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {inProgress.map((course) => (
+            <CourseCard
+              key={course.id}
+              course={course}
+              onClick={() => handleResume(course.id)}
+            />
+          ))}
 
           {/* Add Course Card */}
           <button
             onClick={() => navigate("/dashboard/catalog")}
-            className="flex min-h-[200px] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 bg-transparent text-gray-400 transition hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50/30"
+            className="flex min-h-[350px] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 bg-transparent text-gray-400 transition hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50/30 cursor-pointer overflow-hidden p-5"
           >
-            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-blue-100 transition">
-              <Plus className="h-6 w-6" />
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center transition">
+              <Plus className="h-6 w-6 text-gray-500" />
             </div>
-            <span className="text-sm font-semibold">Browse Catalog</span>
+            <span className="text-sm font-semibold text-gray-700">Browse Catalog</span>
             <span className="text-xs text-gray-400">
               Add a new course to your path
             </span>
@@ -200,28 +110,13 @@ function MyLearningPage() {
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {completed.map((course) => (
-                <div
+                <CourseCard
                   key={course.id}
-                  className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-11 w-11 items-center justify-center rounded-xl ${course.iconBg} ${course.iconColor}`}
-                    >
-                      {ICON_MAP[course.icon]}
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-gray-900">
-                        {course.title}
-                      </h3>
-                      <p className="text-xs text-green-600 font-semibold mt-0.5">
-                        ✓ Completed
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  course={course}
+                  onClick={() => handleResume(course.id)}
+                />
               ))}
             </div>
           )}
